@@ -1,0 +1,313 @@
+SET ThousandSep='.';
+SET DecimalSep=',';
+SET MoneyThousandSep='.';
+SET MoneyDecimalSep=',';
+SET MoneyFormat='R$ #.##0,00;-R$ #.##0,00';
+SET TimeFormat='hh:mm:ss';
+SET DateFormat='DD/MM/YYYY';
+SET TimestampFormat='DD/MM/YYYY hh:mm:ss[.fff]';
+SET MonthNames='jan;fev;mar;abr;mai;jun;jul;ago;set;out;nov;dez';
+SET DayNames='seg;ter;qua;qui;sex;sáb;dom';
+LOAD * INLINE [
+    Unidade
+    Sorocaba
+    São Manuel
+    Ribeirão Preto
+    Araraquara
+    São José do Rio Preto
+    Araçatuba
+    Ourinhos
+    Regente Feijó
+];
+Letras:
+MAPPING LOAD * INLINE [
+De, Para
+ã,a
+â,a
+à,a
+á,a
+ä,a
+ê,e
+è,e
+é,e
+ë,e
+î,i
+ì,i
+í,i
+ï,i
+õ,o
+ô,o
+ò,o
+ó,o
+ö,o
+û,u
+ú,u
+ù,u
+ü,u
+Ã,A
+Â,A
+À,A
+Á,A
+Ä,A
+Ê,E
+È,E
+É,E
+Ë,E
+Î,I
+Ì,I
+Í,I
+Ï,I
+Õ,O
+Ô,O
+Ò,O
+Ó,O
+Ö,O
+Û,U
+Ù,U
+Ú,U
+Ü,U
+ç,c
+Ç,C
+ñ,n
+Ñ,N];
+
+LOAD * INLINE [
+    Marca, Marcas
+    MERCEDES-BENZ, Mercedes-Benz
+    AGRALE, Agrale
+    MAN, Man
+    FORD, Ford
+    IVECO, Iveco
+    SCANIA, Scania
+    VOLVO,  Volvo
+    DAF, Daf
+    INTERNATIONAL, International
+    SINOTRUK, Sinotruck
+    SHAANXI, Shaanxi	 
+
+];
+
+LOAD * INLINE [
+    Concessionária, Filiais
+    Laponia Sorocaba - SP, Sorocaba
+    Laponia São Manoel - SP, São Manuel
+    Laponia Ourinhos - SP, Ourinhos
+    Laponia Ribeirão Preto - SP, Ribeirão Preto
+    Laponia São José Rio Preto - SP, São José
+    Laponia Regente Feijo - SP, Regente Feijó
+    Laponia Araraquara - SP, Araraquara
+    Laponia Aracatuba-SP, Araçatuba
+    
+];
+
+
+
+
+LOAD * INLINE [
+    Produto, Produtos
+    ÔNIBUS, Ônibus
+    CAMINHÃO TRATOR, Caminhão Trator
+    CAMINHÃO, Caminhão
+  
+    
+];
+
+Emplacamento:
+LOAD Ano, 
+     Mês, 
+     Dia, 
+     [Cód Mun], 
+     [Ano de Fabricação], 
+     [Quantidade Licenciada], 
+     Cilindradas, 
+     Potência, 
+     [Código de Carroceria], 
+     [Número de Lugares], 
+     [Tipo de Comprador], 
+     [Tipo de Veículo], 
+     [Renavam / Potência], 
+     Produto, 
+     [Tipo Produto], 
+     Marca, 
+     [Marca / Modelo], 
+     Classe, 
+     [Sub-Classe], 
+     [Indústria Servida], 
+     MapSubString('Letras',Upper (UF & Município)) as %Chave_Mapa,
+     Município, 
+     UF, 
+     [Grupo Econômico], 
+     Concessionária, 
+     [Grupo Econômico 2], 
+     [Soma Classes], 
+     [Mercado Total], 
+     [Grupo Econômico 3], 
+     [Tipo de Carroceria], 
+     Linha, 
+     [Aplicação Bus], 
+     [Emissão de Poluentes], 
+     Tração, 
+     REGIÃO, 
+     [Segmentação Bus], 
+     Encarroçador, 
+     [Tração BUS]
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Emplacamentos Rede 2015 Paulo.xlsx]
+(ooxml, embedded labels, table is Emplacamentos)
+Where Match([Grupo Econômico],'Laponia');
+
+
+// Google Maps Key
+// get a key here http://code.google.com/apis/maps/signup.html
+// gmap_key = 'xx';
+max_zoom_level = 17; //maximum value 17 
+
+// Variables required for calculating map
+// No need to change these
+var_pi180=		'=pi()/180';
+var_lat_offset=	'0';
+var_mc2=		'=256*pow(2,$(var_zoom))';
+var_mc1=		'=256*pow(2,($(var_zoom)-1))';
+var_mid_lat=	'=min(Latitude)+(1+var_lat_offset)*((max(Latitude)-min(Latitude))/2)';
+var_mid_long=	'=min(Longitude)+(max(Longitude)-min(Longitude))/2';
+var_zoom=		'=max(aggr(if(max( round(256*pow(2,(_zoom_level -1)))+( Longitude  *((256*pow(2,_zoom_level ))/360)) )-min( round(256*pow(2,(_zoom_level -1)))+( Longitude  *((256*pow(2,_zoom_level ))/360)) ) <map_size_x AND max((256*pow(2,(_zoom_level-1)))+((0.5*log((1+(sin((Latitude)*pi()/180)))/(1-(sin((Latitude)*pi()/180)))))*((-256*pow(2,_zoom_level))/(2*pi()))))-min((256*pow(2,(_zoom_level-1)))+((0.5*log((1+(sin((Latitude)*pi()/180)))/(1-(sin((Latitude)*pi()/180)))))*((-256*pow(2,_zoom_level))/(2*pi()))))<map_size_y,_zoom_level,1),_zoom_level))';
+var_maptype=	'=if(isnull(only(maptype)),fieldvalue( '&chr(39)&'maptype'&chr(39)&', 1 ),maptype)';
+map_size_x=	   '640';
+map_size_y=     '400';
+
+SET HidePrefix='_' ;
+// Field required for calcualting best zoom level
+_zoom_level:
+Load RecNo( ) as _zoom_level autogenerate(max_zoom_level);
+
+maptype:
+LOAD * INLINE [
+    maptype
+    roadmap
+	mobile
+	satellite
+	terrain
+	hybrid 
+];
+
+set hideprefix = 'maptype';
+
+
+
+LOAD %Chave_Mapa, 
+     Latitude, 
+     Longitude
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Coordenadas.QVD]
+(qvd);
+
+Expurgos:
+LOAD [Mês Emplacamento], 
+     Vendedor, 
+     Modelo1 as Classe, 
+     [Exp. Volvo], 
+     [Exp. Outros]
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Expurgos.xlsx]
+(ooxml, embedded labels, table is Volvo);
+
+left Join(Emplacamento)
+LOAD 
+MapSubString('Letras',Upper ( Subfield (Municipios,'/',1))) as Município, 
+     Vendedor, 
+     Unidade 
+  
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Munic Vend Unid.xlsx]
+(ooxml, embedded labels, table is [Região-Vendedores]);
+
+LOAD * INLINE [
+    Status, StatusOPT
+    1. Aproximação, 1. Aproximação
+    2. Em contato, 2. Em contato
+    3. Cotação em Andamento, 3. Cotação em Andamento
+    4. Solicitado aprovação, 4. Solicitado aprovação
+    5a. Cotação aprovada, 5. Cotação aprovada
+    6. Negociação, 6. Negociação
+];
+mpvendedor:
+Mapping
+LOAD * INLINE [
+    F1, F2
+    Ari Jacinto, Ari Jacinto Jr.
+    Ademir, Ademir Batista
+];
+
+
+
+BaseCM:
+LOAD Número, 
+     [Data inicial], 
+     [Data de fechamento], 
+     Criado, week (Criado) as Semana, 
+     Modificado, 
+     Status, 
+     [Tipo de oportunidade], 
+     [Soluções Volvo], 
+     [Nome da oportunidade], 
+     [Veículos seminovos], 
+     [Veículos semipesados], 
+     [Veículos Pesados], 
+     Probabilidade, 
+     [Razão das vendas perdidas], 
+     [Valor total], 
+     [Margem Bruta], 
+     [Porcentagem de margem bruta], 
+     [Data de entrega / Cancelamento], 
+     Observações, 
+     ApplyMap('mpvendedor',[Responsável, Nome]) as Vendedor, 
+     [Responsável, Sobrenome], 
+     Cliente, 
+     [Contato, Nome:], 
+     [Contato, Sobrenome], 
+     [Número do cliente CDB], 
+     Endereço, 
+     CEP, 
+     Cidade, 
+     Filial as Unidade, 
+     [Nome fantasia], 
+     Telefone, 
+     [Inscrição estadual], 
+     [CPF/CNPJ], 
+     [Número Parma], 
+     Suframa
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Base Opportunity.xls]
+(biff, embedded labels, table is Report$);
+
+
+ClientesCM:
+LOAD Nome, 
+     [Número do cliente CDB], 
+     Telefone, 
+     [E-mail], 
+     [Aplicação 1], 
+     [Aplicação Ônibus], 
+     Estratégico, 
+     [Industria Servida 1], 
+     [Tamanho da frota], 
+     [Tamanho da frota Volvo], 
+     Endereço, 
+     F12, 
+     F13, 
+     CEP, 
+     Cidade, 
+     Município as Municipio, 
+     Estado, 
+     País
+FROM
+[C:\Users\olavo.filho\Desktop\Projetos Qlikview\Clientes CM.xls]
+(biff, embedded labels, table is Report$);
+
+mpvendedor:
+Mapping
+LOAD * INLINE [
+    F1, F2
+    Grupo Econômico 2, Grupo Econômico 
+    ];
+
