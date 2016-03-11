@@ -1,0 +1,35 @@
+
+
+Map:
+Mapping LOAD * INLINE [
+	F1, F2
+    abernardes, Carlos Cioban
+    ademirbatista, Ademir Batista
+    ssoares, Samuel Soares
+    tadioto, Marcelo Tadioto
+    valdecir, Luciano
+];
+
+
+ARL:
+LOAD codigo, 
+     cad_cm, 
+     chassis_usado, 
+     cliente, 
+     CNN, 
+     data_com, 
+     data_cpra, 
+     produto, 
+     ApplyMap ('Maplinha', linha,Null()) as linha, 
+     qte_usado, 
+
+     vend_int, 
+     vend_usad, 
+     ApplyMap('MapVendedores',vendedor,Null()) as vendedor, 
+     chassis, 
+
+FROM
+\\srvapps\QlikLaponia\Geral\Arloc.qvd
+(qvd);
+
+
