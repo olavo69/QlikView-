@@ -1,13 +1,9 @@
 
 
-Map:
+Mapconsultor:
 Mapping LOAD * INLINE [
 	F1, F2
-    abernardes, Carlos Cioban
-    ademirbatista, Ademir Batista
-    ssoares, Samuel Soares
-    tadioto, Marcelo Tadioto
-    valdecir, Luciano
+    Consultor, Vendedor
 ];
 
 
